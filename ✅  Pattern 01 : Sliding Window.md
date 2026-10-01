@@ -13,22 +13,26 @@ Lets understand this problem with a real input:
 A <b>brute-force</b> algorithm will calculate the sum of every 5-element contiguous subarray of the given array and divide the sum by 5 to find the average.
 
 ````js
-function findAvgOfSubarrays(arr, K) {
-  const results = []
-  
-  for(let i = 0; i < arr.length - K + 1; i++) {
-    let sum = 0
+vector<double> findAvgOfSubarrays(const vector<int>& arr, int K) {
+    vector<double> results;
     
-    for(let j = i; j < i + K; j++) {
-      sum += arr[j]
+    // Safety check for invalid bounds or empty inputs
+    if (arr.empty() || K <= 0 || K > arr.size()) {
+        return results;
     }
-    results.push(sum/K)  
-  }
-  return results
+
+    for (size_t i = 0; i <= arr.size() - K; ++i) {
+        double sum = 0;
+        
+        for (size_t j = i; j < i + K; ++j) {
+            sum += arr[j];
+        }
+        // Save the average
+        results.push_back(sum / K); 
+    }
+    
+    return results;
 }
-
-
-findAvgOfSubarrays([1, 3, 2, 6, -1, 4, 1, 8, 2], 5)
 ````
 
 <b>Time complexity: </b> Since for every element of the input array, we are calculating the sum of its next `K` elements, the time complexity of the above algorithm will be `O(N*K)` where `N` is the number of elements in the input array.
@@ -41,39 +45,37 @@ The efficient way to solve this problem would be to visualize each contiguous su
 
 Here is the algorithm for the <b>Sliding Window</b> approach:
 ````js
-function findAveragesOfSubarrays(arr, k) {
-  //sliding window approach
-  
-  const results = []
-  let windowSum = 0
-  let windowStart = 0
-  
-  for(let windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-    //add the next element
-    windowSum += arr[windowEnd]
+vector<double> findAveragesOfSubarrays(const vector<int>& arr, int k) {
+    // sliding window approach
+    vector<double> results;
+    double windowSum = 0;
+    int windowStart = 0;
     
-    //slide the window forward 
-    //we don't need to slide if we have not hit the required window size of k
-    
-    if (windowEnd >= k - 1) {
-      //we are **AUTOMATICALLY** returning the window average once we hit the window size of k
-      //and pushing to the output array
-      results.push(windowSum/k)
-      
-      //subtracting the element going out
-      windowSum -= arr[windowStart]
-      
-      //then sliding the window forward
-      windowStart++
-      
-      //adding the element coming in, in the outer/previous loop
-      //and repeating this process until we hit the end of the array
-    } 
-  }
-  return results
+    for (size_t windowEnd = 0; windowEnd < arr.size(); windowEnd++) {
+        // add the next element
+        windowSum += arr[windowEnd];
+        
+        // slide the window forward 
+        // we don't need to slide if we have not hit the required window size of k
+        if (windowEnd >= k - 1) {
+            // we are **AUTOMATICALLY** returning the window average once we hit the window size of k
+            // and pushing to the output array
+            results.push_back(windowSum / k);
+            
+            // subtracting the element going out
+            windowSum -= arr[windowStart];
+            
+            // then sliding the window forward
+            windowStart++;
+            
+            // adding the element coming in, in the outer/previous loop
+            // and repeating this process until we hit the end of the array
+        }
+    }
+    return results;
 }
 
-findAveragesOfSubarrays([1, 3, 2, 6, -1, 4, 1, 8, 2], 5)//[2.2, 2.8, 2.4, 3.6, 2.8]
+
 ````
 ## Maximum Sum Subarray of Size K (easy)
 https://leetcode.com/problems/largest-subarray-length-k/
@@ -82,29 +84,27 @@ https://leetcode.com/problems/largest-subarray-length-k/
 
 A basic brute force solution will be to calculate the sum of all `K` sized subarrays of the given array to find the subarray with the highest sum. We can start from every index of the given array and add the next `K` elements to find the subarrays sum.
 ````js
-function maxSubarrayOfSizeK(arr, k) {
-  //brute force
-  let maxSum = 0
-  let windowSum = 0
-  
-  //loop through array
-  for(let i = 0; i < arr.length -k + 1; i++) {
+int maxSubarrayOfSizeK(int k, const vector<int>& arr) {
+    // brute force
+    int maxSum = 0;
+    int windowSum = 0;
     
-    //keep track of sum in current window
-    windowSum = 0
-    for(let j = i; j < i + k; j++) {
-      windowSum += arr[j]
+    // loop through array
+    // Explicit cast to int avoids unsigned underflow issues if arr.size() < k
+    for (int i = 0; i <= static_cast<int>(arr.size()) - k; i++) {
+        
+        // keep track of sum in current window
+        windowSum = 0;
+        for (int j = i; j < i + k; j++) {
+            windowSum += arr[j];
+        }
+        
+        // if currentWindowSum is > maxWindowSum
+        // set currentWindowSum to maxWindowSum
+        maxSum = max(maxSum, windowSum);
     }
-    
-    //if currentWindowSum is > maxWindowSum
-    //set currentWindwoSum to maxWindowSum
-    maxSum = Math.max(maxSum, windowSum)
-  }
-  return maxSum
+    return maxSum;
 }
-
-maxSubarrayOfSizeK(3, [2, 1, 5, 1, 3, 2])//9
-maxSubarrayOfSizeK(2, [2, 3, 4, 1, 5])//7
 ````
 - Time complexity will be `O(N*K)`, where `N` is the total number of elements in the given array
 
