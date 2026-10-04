@@ -105,82 +105,80 @@ console.log(`Merged intervals: ${result}`)
 <details>
 <summary><b>C++ Solution</b></summary>
 
-#include 
+````C++
 #include 
 #include 
 #include 
 
-class Interval {
-public:
-    int start;
-    int end;
+using namespace std;
 
-    Interval(int start, int end) : start(start), end(end) {}
-
-    std::string get_interval() const {
-        return "[" + std::to_string(start) + ", " + std::to_string(end) + "]";
-    }
-};
-
-std::vector merge(std::vector intervals) {
+// Merges overlapping intervals
+vector> merge(vector>& intervals) {
     if (intervals.size() < 2) {
         return intervals;
     }
 
-    // Sort the intervals on start time
-    std::sort(intervals.begin(), intervals.end(), [](const Interval& a, const Interval& b) {
-        return a.start < b.start;
-    });
+    // 1. Sort intervals based on their start times
+    sort(intervals.begin(), intervals.end(), 
+        [](const vector& a, const vector& b) {
+            return a[0] < b[0];
+        }
+    );
 
-    std::vector mergedIntervals;
+    vector> mergedIntervals;
 
-    int start = intervals[0].start;
-    int end = intervals[0].end;
+    int currentStart = intervals[0][0];
+    int currentEnd = intervals[0][1];
 
     for (size_t i = 1; i < intervals.size(); ++i) {
-        const Interval& interval = intervals[i];
-        if (interval.start <= end) {
-            // Overlapping intervals, adjust the end
-            end = std::max(interval.end, end);
+        // Overlapping condition: start time is <= previous end time
+        if (intervals[i][0] <= currentEnd) {
+            currentEnd = max(currentEnd, intervals[i][1]);
         } else {
-            // Non-overlapping interval, add the previous interval and reset
-            mergedIntervals.emplace_back(start, end);
-            start = interval.start;
-            end = interval.end;
+            // Push merged segment and move to the next interval
+            mergedIntervals.push_back({currentStart, currentEnd});
+            currentStart = intervals[i][0];
+            currentEnd = intervals[i][1];
         }
     }
 
-    // Add the last interval
-    mergedIntervals.emplace_back(start, end);
+    // Push the final remaining interval
+    mergedIntervals.push_back({currentStart, currentEnd});
     return mergedIntervals;
 }
 
-void print_merged(const std::vector& intervals) {
-    std::string result = "";
-    for (const auto& interval : intervals) {
-        result += interval.get_interval() + " ";
+// Utility function to print intervals
+void printIntervals(const vector>& intervals) {
+    cout << "[";
+    for (size_t i = 0; i < intervals.size(); ++i) {
+        cout << "[" << intervals[i][0] << ", " << intervals[i][1] << "]";
+        if (i + 1 < intervals.size()) cout << ", ";
     }
-    std::cout << "Merged intervals: " << result << "\n";
+    cout << "]\n";
 }
 
 int main() {
-    // Test Case 1
-    auto merged_intervals = merge({Interval(1, 4), Interval(2, 5), Interval(7, 9)});
-    print_merged(merged_intervals);
-    // Output: Merged intervals: [1, 5] [7, 9] 
+    // Example 1
+    vector> test1 = {{1, 4}, {2, 5}, {7, 9}};
+    auto res1 = merge(test1);
+    cout << "Output: ";
+    printIntervals(res1); // [[1, 5], [7, 9]]
 
-    // Test Case 2
-    merged_intervals = merge({Interval(6, 7), Interval(2, 4), Interval(5, 9)});
-    print_merged(merged_intervals);
-    // Output: Merged intervals: [2, 4] [5, 9] 
+    // Example 2
+    vector> test2 = {{6, 7}, {2, 4}, {5, 9}};
+    auto res2 = merge(test2);
+    cout << "Output: ";
+    printIntervals(res2); // [[2, 4], [5, 9]]
 
-    // Test Case 3
-    merged_intervals = merge({Interval(1, 4), Interval(2, 6), Interval(3, 5)});
-    print_merged(merged_intervals);
-    // Output: Merged intervals: [1, 6] 
+    // Example 3
+    vector> test3 = {{1, 4}, {2, 6}, {3, 5}};
+    auto res3 = merge(test3);
+    cout << "Output: ";
+    printIntervals(res3); // [[1, 6]]
 
     return 0;
 }
+````
 
 </details>
 
