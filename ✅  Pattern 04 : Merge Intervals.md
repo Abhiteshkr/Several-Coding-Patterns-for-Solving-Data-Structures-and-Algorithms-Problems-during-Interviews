@@ -27,7 +27,9 @@ The diagram above clearly shows a merging approach. Our algorithm will look like
     c.end = max(a.end, b.end)
 ````
 We will keep repeating the above two steps to merge `c` with the next interval if it overlaps with `c`.
-
+<details>
+<summary><b>JS</b></summary>
+    
 ````js
 class Interval {
   constructor(start, end) {
@@ -98,7 +100,13 @@ console.log(`Merged intervals: ${result}`)
 //Output: [[1,6]]
 //Explanation: Since all the given intervals overlap, we merged them into one.
 ````
+</details>
+
 #### OR 
+
+<details>
+<summary><b>JS</b></summary>
+    
 ````js
 function merge(intervals) {
   if(intervals.length < 2) return intervals
@@ -125,6 +133,8 @@ merge([[6,7], [2,4], [5,9]])//[[2,4], [5,9]], Since the intervals [6,7] and [5,9
 merge([[1,4], [2,6], [3,5]])//[[1,6]], Since all the given intervals overlap, we merged them into one.
 merge([[2,5]])
 ````
+
+</details>
 
 - The time complexity of the above algorithm is `O(N * logN)`, where `N` is the total number of intervals. We are iterating the intervals only once which will take `O(N)`, in the beginning though, since we need to sort the intervals, our algorithm will take `O(N * logN)`.
 - The space complexity of the above algorithm will be `O(N)` as we need to return a list containing all the merged intervals. We will also need `O(N)` space for sorting
