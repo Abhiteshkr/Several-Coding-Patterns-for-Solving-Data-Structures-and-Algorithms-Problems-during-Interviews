@@ -102,6 +102,88 @@ console.log(`Merged intervals: ${result}`)
 ````
 </details>
 
+<details>
+<summary><b>C++ Solution</b></summary>
+
+#include 
+#include 
+#include 
+#include 
+
+class Interval {
+public:
+    int start;
+    int end;
+
+    Interval(int start, int end) : start(start), end(end) {}
+
+    std::string get_interval() const {
+        return "[" + std::to_string(start) + ", " + std::to_string(end) + "]";
+    }
+};
+
+std::vector merge(std::vector intervals) {
+    if (intervals.size() < 2) {
+        return intervals;
+    }
+
+    // Sort the intervals on start time
+    std::sort(intervals.begin(), intervals.end(), [](const Interval& a, const Interval& b) {
+        return a.start < b.start;
+    });
+
+    std::vector mergedIntervals;
+
+    int start = intervals[0].start;
+    int end = intervals[0].end;
+
+    for (size_t i = 1; i < intervals.size(); ++i) {
+        const Interval& interval = intervals[i];
+        if (interval.start <= end) {
+            // Overlapping intervals, adjust the end
+            end = std::max(interval.end, end);
+        } else {
+            // Non-overlapping interval, add the previous interval and reset
+            mergedIntervals.emplace_back(start, end);
+            start = interval.start;
+            end = interval.end;
+        }
+    }
+
+    // Add the last interval
+    mergedIntervals.emplace_back(start, end);
+    return mergedIntervals;
+}
+
+void print_merged(const std::vector& intervals) {
+    std::string result = "";
+    for (const auto& interval : intervals) {
+        result += interval.get_interval() + " ";
+    }
+    std::cout << "Merged intervals: " << result << "\n";
+}
+
+int main() {
+    // Test Case 1
+    auto merged_intervals = merge({Interval(1, 4), Interval(2, 5), Interval(7, 9)});
+    print_merged(merged_intervals);
+    // Output: Merged intervals: [1, 5] [7, 9] 
+
+    // Test Case 2
+    merged_intervals = merge({Interval(6, 7), Interval(2, 4), Interval(5, 9)});
+    print_merged(merged_intervals);
+    // Output: Merged intervals: [2, 4] [5, 9] 
+
+    // Test Case 3
+    merged_intervals = merge({Interval(1, 4), Interval(2, 6), Interval(3, 5)});
+    print_merged(merged_intervals);
+    // Output: Merged intervals: [1, 6] 
+
+    return 0;
+}
+
+</details>
+
 #### OR 
 
 <details>
